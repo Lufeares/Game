@@ -1,0 +1,28 @@
+workflows:
+  mac-desktop-test:
+    name: Mac desktop testing (M2)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    scripts:
+      - name: Check macOS testing tools
+        script: |
+          set -eu
+          {
+            sw_vers
+            uname -m
+            git --version
+            python3 --version
+            command -v osascript
+          } | tee mac-testing-info.txt
+      - name: Prepare manual testing folder
+        script: |
+          set -eu
+          mkdir -p "$HOME/Desktop/MacTesting"
+          printf '%s\n' \
+            'Place your macOS app ZIP in this folder and extract it in Finder.' \
+            'Start this workflow with Enable SSH/VNC access checked.' \
+            'Connect using Explore build machine, then open the app for testing.' \
+            'Save results before cancelling the build; this machine is temporary.' \
+            > "$HOME/Desktop/MacTesting/START-HERE.txt"
+    artifacts:
+      - mac-testing-info.txt
